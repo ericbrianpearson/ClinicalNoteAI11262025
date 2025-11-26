@@ -1,0 +1,347 @@
+Replit Agent Prompt — Health Scribe AI Audit, Hardening & Iguana↔Epic Integration
+
+Goal:
+Systematically verify and refine the existing Health Scribe AI app so its four core capabilities are real, tested, and secure:
+
+Voice-to-Text → SOAP notes
+
+Smart E/M Coding with defensible logic + disclaimers
+
+AI Clinical Insights (entities, follow-ups)
+
+Patient Management + Patient Portal (read-only)
+
+…and add a first-class Iguana→Epic integration layer supporting HL7v2, FHIR REST, and DB routes, with clear adapters, tests, env-gated PHI flow, and end-to-end proof.
+
+0) Repo Discovery & Baseline
+
+Scan & summarize stack, frameworks, entry points, API routes, UI, data layer.
+
+Emit ARTIFACTS/00_repo_scan.md with tree, detected tech, and any broken links.
+
+Bootstrap
+
+Resolve deps (npm ci / pip install -r / etc.).
+
+Lint + typecheck; auto-fix trivial issues.
+
+Run existing tests → ARTIFACTS/01_test_baseline.txt.
+
+Dev ergonomics
+
+Add Makefile (or justfile) targets: install, dev, test, lint, format, seed, e2e, purge.
+
+Ensure README.md has a one-shot Quickstart.
+
+Environment contract (.env.example, fail-closed if missing):
+
+# Core
+TRANSCRIBE_PROVIDER=openai|azure|gcp|local
+OPENAI_API_KEY=
+AZURE_SPEECH_KEY=   AZURE_SPEECH_REGION=
+GCP_JSON_PATH=
+LLM_PROVIDER=openai|azure|anthropic|local
+LLM_MODEL=
+DB_URL=sqlite:///data/app.db
+FIELD_ENCRYPTION_KEY= # 32-byte base64
+JWT_SECRET=           SESSION_SECRET=
+APP_BASE_URL=
+ALLOWED_ORIGINS=http://localhost:3000
+ENABLE_AUDIT_LOGS=true
+PORT=8080
+
+# Iguana / Epic integration
+IGUANA_BASE_URL=http://localhost:6543          # Iguana dashboard/API (if exposed)
+IGUANA_API_TOKEN=                               # if enabled; leave blank by default
+IGUANA_HL7_LLP_HOST=127.0.0.1
+IGUANA_HL7_LLP_PORT=2575                        # demo LLP port
+IGUANA_CHANNEL_INBOUND=hsai_in_hl7              # channel names are examples
+IGUANA_CHANNEL_OUTBOUND=hsai_out_hl7
+IGUANA_ENABLE_FHIR=false
+EPIC_FHIR_BASE=
+EPIC_FHIR_CLIENT_ID=    EPIC_FHIR_CLIENT_SECRET=
+EPIC_FHIR_SCOPES=patient/*.read patient/*.write offline_access
+EPIC_FHIR_AUTH_URL=     EPIC_FHIR_TOKEN_URL=
+IGUANA_DB_CONNSTR=      # optional: ODBC/JDBC style if you use DB routes
+IGUANA_TLS_ENABLED=false
+
+
+Do not commit real PHI keys or tokens.
+
+1) Voice-to-Text → SOAP (prove it works)
+
+Transcription adapters in src/services/transcribe/: openai_whisper.*, azure_speech.*, gcp_speech.*, local_stub.*.
+
+Common return shape: { text, words?, confidence? }.
+
+Provider is selected via TRANSCRIBE_PROVIDER.
+
+SOAP formatter src/services/soap/soapFormatter.* → pure function toSOAP(transcript, patientContext) producing S,O,A,P consistently (LLM “polish” optional).
+
+Fixtures & tests
+
+tests/transcribe_soap.test.* with synthetic audio or canned transcripts.
+
+Assert non-empty S/O/A/P and deterministic baseline without LLM.
+
+Endpoints & minimal UI
+
+/api/transcribe accepts file/mic/URL; returns transcript + SOAP.
+
+Simple web page to upload audio and preview SOAP; export PDF/MD.
+
+Log validation in ARTIFACTS/10_voice_to_text_validation.md.
+
+2) Smart E/M Coding (transparent baseline, not coder replacement)
+
+Rules engine src/services/coding/em_engine.* + rulesets/2021_office_em.json.
+
+Inputs: time, problem complexity, data reviewed, risk, visit type.
+
+Output:
+
+{
+  "suggestedCodes":[{"code":"99213","rationale":"...", "confidence":0.55}],
+  "inputsUsed":{...},
+  "disclaimers":["E/M guidance only; human coder verification required."]
+}
+
+
+Tests tests/em_engine.test.* with ≥6 scenarios (new/estab., low→high comp.).
+
+API/UI /api/coding/suggest (returns code+rationale+disclaimer), export CSV/JSON.
+
+Capture proof in ARTIFACTS/20_em_validation.md.
+
+3) AI Clinical Insights
+
+NER tiered providers src/services/insights/: spacy, rule_based, optional llm_ner (env-gated).
+
+Output: { diagnoses:[], medications:[], allergies:[], symptoms:[], redFlags:[] }.
+
+Follow-ups / preventive prompts suggestions.* with rule tables (JSON) and “not medical advice” banner.
+
+Tests tests/insights.test.* (negation handling: “denies chest pain”).
+
+Results → ARTIFACTS/30_insights_validation.md.
+
+4) Patient Management & Portal (read-only)
+
+Entities: Patient, Encounter, User, Attachment, AuditLog.
+
+PHI columns use field-level encryption (Fernet/AEAD).
+
+Migrations + make seed with synthetic data.
+
+Auth/RBAC: JWT + roles (provider, coder, admin, patient) and step-up for admin actions.
+
+Audit logs: every PHI read/write → /admin/audit filterable.
+
+Portal /portal: patient can view their demographics, allergies, encounters, notes; all accesses audited.
+
+Tests tests/patient_mgmt.test.* (CRUD, encryption present, portal self-only).
+
+Log → ARTIFACTS/40_patient_mgmt_validation.md.
+
+5) Iguana ↔ Epic Integration Layer (HL7v2, FHIR, DB)
+
+Iguana is a developer-first integration engine with a Lua-based Translator IDE and pre-built components for HL7, FHIR, APIs, TCP/LLP, HTTPS, etc., commonly used to connect Epic and other EHRs. We wire HSAI to Iguana without embedding PHI in logs, and keep everything env-gated. 
+iNTERFACEWARE
++2
+iNTERFACEWARE
++2
+
+5.1 Project structure (add or adjust)
+/src/integration/iguana/
+  adapters/
+    hl7_llp_client.*         # send/recv HL7 v2 via LLP/TCP
+    fhir_rest_client.*       # FHIR REST client w/ OAuth2
+    db_connector.*           # optional DB route (ODBC/JDBC)
+  mapping/
+    hl7v2_to_internal.lua    # Lua examples for Iguana Translator
+    internal_to_hl7v2.lua
+    fhir_to_internal.json    # JSONPath/JS map or Lua helpers
+    internal_to_fhir.json
+  channels/
+    README.md                # describes required Iguana channels
+  tests/
+    iguana_hl7_e2e.test.*
+    iguana_fhir_e2e.test.*
+
+
+Include Lua mapping stubs and example ADT^A01/ORU^R01 messages for developer iteration inside Iguana Translator. 
+docs.interfaceware.com
++1
+
+5.2 HL7v2 over LLP/TCP (Inbound/Outbound)
+
+Inbound (Epic→Iguana→HSAI):
+
+Epic emits HL7v2 (e.g., ADT/ORU) to Iguana inbound channel hsai_in_hl7.
+
+Iguana Translator transforms (Lua) → POST to HSAI /api/integrations/hl7/inbound.
+
+HSAI validates, encrypts PHI fields, creates/updates Patient/Encounter; ACK via Iguana.
+
+Outbound (HSAI→Iguana→Epic):
+
+HSAI emits HL7v2 (e.g., ORU for finalized note) to Iguana outbound channel hsai_out_hl7 via LLP client.
+
+Iguana routes to Epic LLP endpoint and manages ACK/NAK.
+
+Implementation tasks
+
+Add /api/integrations/hl7/inbound endpoint; validate message type (MSH-9), parse, map to internal schema, persist.
+
+Build hl7_llp_client.* to format MLLP frames and handle ACKs.
+
+Provide example Lua snippets (ADT^A01 → Patient upsert; ORU^R01 → Encounter note attach).
+
+No PHI in logs; redact helper applied before logging.
+
+Tests
+
+tests/iguana_hl7_e2e.test.* injects sample HL7 messages through a mock LLP server, asserts Patient/Encounter updates and ACKs.
+
+Iguana’s component model supports HL7 LLP/TCP, HTTPS, and mapping HL7↔JSON to accelerate Epic interfaces. 
+iNTERFACEWARE
+
+5.3 FHIR REST (SMART-on-FHIR/OAuth2)
+
+Capabilities
+
+If IGUANA_ENABLE_FHIR=true, let HSAI call Epic FHIR endpoints (e.g., Patient, Encounter, DocumentReference, Observation) through fhir_rest_client.* (OAuth2 client-credentials or SMART conf).
+
+Support push (DocumentReference with binary note) and pull (demographics/encounters).
+
+Security
+
+Use EPIC_FHIR_AUTH_URL/TOKEN_URL for OAuth; store tokens ephemeral in memory.
+
+Strict scopes via EPIC_FHIR_SCOPES env; never log tokens/PII.
+
+Mapping
+
+JSON mapping tables (internal↔FHIR) plus helper functions.
+
+Add conformance checks; flag unmapped fields in ARTIFACTS/52_fhir_mapping_gaps.md.
+
+Tests
+
+tests/iguana_fhir_e2e.test.* use a mock FHIR server (or wire-mock) to validate CRUD and auth flows.
+
+Iguana can act as a FHIR client and transform HL7↔FHIR; real-world deployments combine APIs and v2 messages for Epic. 
+iNTERFACEWARE
++2
+iNTERFACEWARE
++2
+
+5.4 (Optional) DB routes
+
+Add db_connector.* with parameterized queries for Epic-adjacent databases (read-only by default).
+
+Treat as last resort path; ensure read auditing and PII redaction.
+
+5.5 Channel documentation & ops
+
+Create /src/integration/iguana/channels/README.md describing required channels:
+
+hsai_in_hl7 (Listener: LLP/TCP) → HTTP POST to HSAI
+
+hsai_out_hl7 (From HSAI HTTP/queue) → LLP/TCP to Epic
+
+Optional hsai_fhir_bridge for FHIR proxying
+
+Include screenshots/steps to build channels in Iguana X and import Lua scripts (save to ARTIFACTS/51_iguana_channel_setup.md). 
+iNTERFACEWARE
+
+6) End-to-End Proof (incl. Iguana paths)
+
+Scenario script scripts/e2e_scenario.sh (or .ps1):
+
+Seed demo patient.
+
+Submit synthetic audio → transcript → SOAP.
+
+Generate E/M suggestion.
+
+Run Insights.
+
+Create Encounter; export note.
+
+HL7 outbound: emit ORU^R01 to mock LLP server (simulating Iguana/Epic).
+
+FHIR (if enabled): push DocumentReference to mock Epic FHIR; verify 201.
+
+Produce artifacts in ARTIFACTS/e2e/ + ARTIFACTS/50_e2e_report.md.
+
+UI E2E (Playwright/Cypress)
+
+Upload audio → see SOAP → see E/M + disclaimers → insights → save → patient portal (read-only) shows encounter.
+
+Capture screenshots/videos.
+
+7) Security & HIPAA Readiness (not a claim of compliance)
+
+CSP, strict CORS, input limits, rate limits, structured error handling.
+
+No PHI in logs (redaction helper).
+
+PHI at rest (field-level encryption) and in transit (TLS fronting).
+
+Third-party data flows (Iguana, Epic FHIR, DB) documented in HIPAA_READINESS.md with BAAs to obtain, retention, backups, and incident response plan.
+
+Tests in tests/security.test.*; summary → ARTIFACTS/60_security_summary.md.
+
+8) Developer Docs & Tools
+
+Update: README.md, ARCHITECTURE.md, API_REFERENCE.md, SECURITY.md, HIPAA_READINESS.md, BILLING_EXPORT.md.
+
+Add Postman/Thunder collection: transcribe, SOAP, coding, insights, patients, portal, /integrations/hl7, /integrations/fhir.
+
+CI: .github/workflows/verify.yml running lint, unit, and E2E (mocked external deps).
+
+9) Feature-to-Claim Traceability
+
+Create CLAIMS_TRACEABILITY.md:
+
+Claim	Code Path(s)	Tests	Manual Proof	Status
+Voice-to-Text → SOAP	src/services/transcribe/*, src/services/soap/*	tests/transcribe_soap.test.*	ARTIFACTS/10_voice_to_text_validation.md	
+Smart E/M Coding	src/services/coding/*	tests/em_engine.test.*	ARTIFACTS/20_em_validation.md	
+AI Insights	src/services/insights/*	tests/insights.test.*	ARTIFACTS/30_insights_validation.md	
+Patient Mgmt + Portal	src/models/*, src/routes/*	tests/patient_mgmt.test.*	ARTIFACTS/40_patient_mgmt_validation.md	
+Iguana HL7v2	src/integration/iguana/adapters/hl7_llp_client.*, mapping/*.lua	tests/iguana_hl7_e2e.test.*	ARTIFACTS/51_iguana_channel_setup.md	
+Epic FHIR	src/integration/iguana/adapters/fhir_rest_client.*	tests/iguana_fhir_e2e.test.*	ARTIFACTS/52_fhir_mapping_gaps.md	
+E2E Flow	scripts/e2e_scenario.*, tests/e2e/*	✅	ARTIFACTS/50_e2e_report.md	
+Security/HIPAA Readiness	middleware/*, SECURITY.md, HIPAA_READINESS.md	tests/security.test.*	ARTIFACTS/60_security_summary.md	
+
+Mark any gaps as ⚠️ with owner + plan.
+
+10) Ground Rules
+
+Use synthetic data/audio only.
+
+Never log PHI or tokens; redact.
+
+Keep adapters isolated; all external flows are env-gated (IGUANA_*, EPIC_*).
+
+Don’t claim HIPAA compliance—document readiness and gaps.
+
+11) Deliverables (must exist)
+
+ARTIFACTS/00_repo_scan.md, 01_test_baseline.txt, 10_voice_to_text_validation.md, 20_em_validation.md, 30_insights_validation.md, 40_patient_mgmt_validation.md, 50_e2e_report.md, 51_iguana_channel_setup.md, 52_fhir_mapping_gaps.md, 60_security_summary.md
+
+CLAIMS_TRACEABILITY.md
+
+Docs: README.md, ARCHITECTURE.md, API_REFERENCE.md, SECURITY.md, HIPAA_READINESS.md, BILLING_EXPORT.md
+
+.env.example, Makefile (or justfile)
+
+/src/integration/iguana/* (adapters, mappings, tests, channel README)
+
+Postman/Thunder collection with HL7 and FHIR calls
+
+Passing unit tests; E2E runs with mocks by default
+
+Execute all steps now.
+When done, update CLAIMS_TRACEABILITY.md and write ARTIFACTS/FINAL_SUMMARY.md with: fixed issues, verified features, mapping gaps, and next actions (BAAs, Epic sandbox onboarding, production endpoints).

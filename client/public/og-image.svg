@@ -1,0 +1,57 @@
+
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2563EB;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1E40AF;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  
+  <!-- Grid Pattern -->
+  <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+  </pattern>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+  
+  <!-- Logo Area -->
+  <circle cx="200" cy="315" r="60" fill="rgba(255,255,255,0.2)"/>
+  <path d="M200 275 L200 355 M175 315 L225 315" stroke="white" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="185" cy="300" r="8" fill="white"/>
+  <circle cx="215" cy="330" r="8" fill="white"/>
+  
+  <!-- Main Text -->
+  <text x="320" y="280" font-family="Arial, sans-serif" font-size="64" font-weight="bold" fill="white">
+    Health Scribe AI
+  </text>
+  
+  <!-- Subtitle -->
+  <text x="320" y="330" font-family="Arial, sans-serif" font-size="32" fill="rgba(255,255,255,0.9)">
+    AI-Powered Clinical Documentation
+  </text>
+  
+  <!-- Features -->
+  <text x="320" y="380" font-family="Arial, sans-serif" font-size="24" fill="rgba(255,255,255,0.8)">
+    ✓ Voice Transcription  ✓ E/M Coding  ✓ HIPAA Compliant
+  </text>
+  
+  <!-- Call to Action -->
+  <rect x="320" y="420" width="200" height="50" rx="25" fill="white"/>
+  <text x="420" y="450" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#2563EB">
+    Try Demo
+  </text>
+  
+  <!-- Medical Icons -->
+  <g transform="translate(950, 200)">
+    <!-- Stethoscope -->
+    <circle cx="0" cy="20" r="12" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="3"/>
+    <path d="M12 20 Q30 0 50 20 Q50 40 30 50 L20 40" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="3"/>
+  </g>
+  
+  <g transform="translate(950, 320)">
+    <!-- Heart Monitor -->
+    <path d="M0 0 L10 0 L15 -15 L25 30 L35 -20 L45 10 L60 10" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="3"/>
+  </g>
+</svg>

@@ -1,0 +1,424 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Enterprise SaaS Healthcare Platform - Health Scribe AI */
+:root {
+  /* Light Mode - Enterprise SaaS Colors */
+  --background: 0 0% 100%; /* #FFFFFF - Pure white */
+  --foreground: 0 0% 20%; /* #333333 - Dark gray text */
+  --card: 0 0% 100%; /* #FFFFFF - White cards */
+  --card-foreground: 0 0% 20%; /* #333333 - Dark card text */
+  --popover: 0 0% 100%; /* #FFFFFF - White popover */
+  --popover-foreground: 0 0% 20%; /* #333333 - Dark popover text */
+  --primary: 218 89% 50%; /* #1A73E8 - Google Blue */
+  --primary-foreground: 0 0% 100%; /* #FFFFFF - White text on primary */
+  --secondary: 0 0% 20%; /* #333333 - Dark gray secondary */
+  --secondary-foreground: 0 0% 100%; /* #FFFFFF - White text on secondary */
+  --muted: 210 40% 98%; /* #F8FAFC - Very light gray */
+  --muted-foreground: 215 16% 47%; /* #64748B - Medium gray text */
+  --accent: 167 85% 36%; /* #00B894 - Emerald green */
+  --accent-foreground: 0 0% 100%; /* #FFFFFF - White text on accent */
+  --destructive: 6 90% 50%; /* #D93025 - Google Red */
+  --destructive-foreground: 0 0% 100%; /* #FFFFFF - White text on destructive */
+  --border: 214 32% 91%; /* #E2E8F0 - Light border */
+  --input: 0 0% 100%; /* #FFFFFF - White input background */
+  --ring: 218 89% 50%; /* #1A73E8 - Focus ring */
+  --radius: 1rem; /* 16px border radius - 2xl */
+  
+  /* Healthcare Brand Colors */
+  --medical-blue: 218 89% 50%; /* #1A73E8 */
+  --healthcare-green: 167 85% 36%; /* #00B894 */
+  --alert-red: 6 90% 50%; /* #D93025 */
+  --success-green: 142 71% 45%; /* #16A085 */
+  --warning-orange: 35 91% 62%; /* #F39C12 */
+  
+  /* Chart Colors */
+  --chart-1: 218 89% 50%; /* #1A73E8 */
+  --chart-2: 167 85% 36%; /* #00B894 */
+  --chart-3: 35 91% 62%; /* #F39C12 */
+  --chart-4: 6 90% 50%; /* #D93025 */
+  --chart-5: 271 76% 53%; /* #9B59B6 */
+}
+
+.dark {
+  /* Dark Mode - Pure Black Enterprise */
+  --background: 0 0% 0%; /* #000000 - Pure black */
+  --foreground: 0 0% 100%; /* #FFFFFF - Pure white text */
+  --card: 0 0% 7%; /* #121212 - Dark surface */
+  --card-foreground: 0 0% 100%; /* #FFFFFF - White card text */
+  --popover: 0 0% 7%; /* #121212 - Dark popover */
+  --popover-foreground: 0 0% 92%; /* #EBEBEB - Very light popover text */
+  --primary: 213 100% 65%; /* #0A84FF - iOS Blue */
+  --primary-foreground: 0 0% 100%; /* #FFFFFF - White text on primary */
+  --secondary: 0 0% 82%; /* #D1D5DB - Light gray secondary */
+  --secondary-foreground: 0 0% 0%; /* #000000 - Black text on secondary */
+  --muted: 0 0% 6%; /* #0F0F0F - Very dark gray */
+  --muted-foreground: 0 0% 56%; /* #8F8F8F - Medium gray text */
+  --accent: 180 100% 50%; /* #00FFFF - Bright cyan */
+  --accent-foreground: 0 0% 0%; /* #000000 - Black text on accent */
+  --destructive: 0 100% 67%; /* #FF4C4C - Bright red */
+  --destructive-foreground: 0 0% 100%; /* #FFFFFF - White text on destructive */
+  --border: 0 0% 15%; /* #262626 - Dark border */
+  --input: 0 0% 8%; /* #141414 - Dark input background */
+  --ring: 213 100% 65%; /* #0A84FF - Focus ring */
+  
+  /* Healthcare Brand Colors - Dark Mode */
+  --medical-blue: 213 100% 65%; /* #0A84FF */
+  --healthcare-green: 120 100% 40%; /* #00CC00 */
+  --alert-red: 0 100% 67%; /* #FF4C4C */
+  --success-green: 142 71% 65%; /* #1ABC9C */
+  --warning-orange: 39 100% 50%; /* #FF9900 */
+  
+  /* Chart Colors - Dark Mode */
+  --chart-1: 213 100% 65%; /* #0A84FF */
+  --chart-2: 120 100% 40%; /* #00CC00 */
+  --chart-3: 39 100% 50%; /* #FF9900 */
+  --chart-4: 0 100% 67%; /* #FF4C4C */
+  --chart-5: 300 100% 70%; /* #FF66FF */
+}
+
+/* Base Layer Customizations */
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* Typography Scale */
+  h1 {
+    @apply scroll-m-20 text-4xl font-bold tracking-tight lg:text-5xl;
+  }
+  
+  h2 {
+    @apply scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0;
+  }
+  
+  h3 {
+    @apply scroll-m-20 text-2xl font-semibold tracking-tight;
+  }
+  
+  h4 {
+    @apply scroll-m-20 text-xl font-semibold tracking-tight;
+  }
+  
+  p {
+    @apply leading-7 [&:not(:first-child)]:mt-6;
+  }
+  
+  /* Focus States */
+  .focus-visible {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
+  }
+}
+
+/* Component Layer Customizations */
+@layer components {
+  /* Button Enhancements */
+  .btn-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/80 transition-all duration-200 shadow-lg hover:shadow-xl;
+  }
+  
+  .btn-secondary {
+    @apply bg-secondary text-secondary-foreground hover:bg-secondary/90 active:bg-secondary/80 transition-all duration-200;
+  }
+  
+  .btn-accent {
+    @apply bg-accent text-accent-foreground hover:bg-accent/90 active:bg-accent/80 transition-all duration-200;
+  }
+  
+  /* Card Enhancements */
+  .card-enhanced {
+    @apply bg-card text-card-foreground rounded-2xl border shadow-sm hover:shadow-lg transition-all duration-300;
+  }
+  
+  /* Input Enhancements */
+  .input-enhanced {
+    @apply flex h-12 w-full rounded-xl border border-input bg-input px-4 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200;
+  }
+  
+  /* Healthcare Specific Classes */
+  .medical-badge {
+    @apply inline-flex items-center rounded-full bg-medical-blue/10 px-3 py-1 text-xs font-medium text-medical-blue ring-1 ring-inset ring-medical-blue/20;
+  }
+  
+  .hipaa-indicator {
+    @apply inline-flex items-center gap-1 text-xs text-muted-foreground;
+  }
+  
+  .security-badge {
+    @apply inline-flex items-center gap-1 rounded-md bg-green-100 dark:bg-green-900/20 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-400;
+  }
+  
+  /* Animation Classes */
+  .fade-in {
+    @apply animate-in fade-in-0 duration-500;
+  }
+  
+  .slide-up {
+    @apply animate-in slide-in-from-bottom-4 duration-500;
+  }
+  
+  .scale-in {
+    @apply animate-in zoom-in-95 duration-300;
+  }
+}
+
+/* Utility Layer Customizations */
+@layer utilities {
+  /* Custom Shadows */
+  .shadow-healthcare {
+    box-shadow: 0 4px 6px -1px rgba(26, 115, 232, 0.1), 0 2px 4px -1px rgba(26, 115, 232, 0.06);
+  }
+  
+  .shadow-healthcare-lg {
+    box-shadow: 0 10px 15px -3px rgba(26, 115, 232, 0.1), 0 4px 6px -2px rgba(26, 115, 232, 0.05);
+  }
+  
+  /* Custom Gradients */
+  .gradient-medical {
+    background: linear-gradient(135deg, hsl(var(--medical-blue)) 0%, hsl(var(--healthcare-green)) 100%);
+  }
+  
+  .gradient-dark {
+    background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--muted)) 100%);
+  }
+  
+  /* Custom Borders */
+  .border-medical {
+    @apply border-blue-200 dark:border-blue-800;
+  }
+  
+  .border-healthcare {
+    @apply border-green-200 dark:border-green-800;
+  }
+  
+  /* Text Colors */
+  .text-medical {
+    @apply text-blue-600 dark:text-blue-400;
+  }
+  
+  .text-healthcare {
+    @apply text-green-600 dark:text-green-400;
+  }
+  
+  /* Background Colors */
+  .bg-medical {
+    @apply bg-blue-600 dark:bg-blue-500;
+  }
+  
+  .bg-healthcare {
+    @apply bg-green-600 dark:bg-green-500;
+  }
+  
+  /* Scrollbar Styling */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--muted-foreground)) transparent;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--muted-foreground));
+    border-radius: 3px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(var(--foreground));
+  }
+}
+
+/* Print Styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  
+  .card-enhanced {
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: none !important;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  :root {
+    --border: 0 0% 50%;
+    --ring: 0 0% 0%;
+  }
+  
+  .dark {
+    --border: 0 0% 70%;
+    --ring: 0 0% 100%;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Mobile Optimizations */
+@layer utilities {
+  /* iOS Safe Area Support */
+  .device-ios.pwa-mode {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* Touch Optimization */
+  .mobile .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Prevent text selection on mobile */
+  .mobile button,
+  .mobile .no-select {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Smooth scrolling for mobile */
+  .mobile {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Disable pull-to-refresh in PWA mode */
+  .pwa-mode body {
+    overscroll-behavior-y: contain;
+  }
+
+  /* Mobile animation */
+  @keyframes slide-up {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.3s ease-out;
+  }
+}
+
+/* Mobile-specific layouts */
+@media (max-width: 640px) {
+  /* Smaller text on mobile for better readability */
+  h1 {
+    @apply text-3xl;
+  }
+
+  h2 {
+    @apply text-2xl;
+  }
+
+  h3 {
+    @apply text-xl;
+  }
+
+  /* Larger touch targets */
+  button,
+  a,
+  input[type="checkbox"],
+  input[type="radio"] {
+    min-height: 44px;
+  }
+
+  /* Full-width cards on mobile */
+  .card-enhanced {
+    @apply rounded-lg;
+  }
+
+  /* Adjust padding for mobile */
+  .container {
+    @apply px-4;
+  }
+}
+
+/* Tablet-specific adjustments */
+@media (min-width: 641px) and (max-width: 1023px) {
+  .container {
+    @apply px-6;
+  }
+}
+
+/* Desktop-specific adjustments */
+@media (min-width: 1024px) {
+  .container {
+    @apply px-8;
+  }
+}
+
+/* iOS-specific fixes */
+@supports (-webkit-touch-callout: none) {
+  /* iOS input zoom fix */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="tel"],
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+
+  /* iOS bounce fix for PWA */
+  .pwa-mode body {
+    position: fixed;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+  }
+
+  .pwa-mode #root {
+    overflow: auto;
+    height: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Android-specific fixes */
+.device-android {
+  /* Better font rendering on Android */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Landscape orientation on mobile */
+@media (max-width: 1023px) and (orientation: landscape) {
+  /* Reduce header sizes in landscape */
+  h1 {
+    @apply text-2xl;
+  }
+
+  h2 {
+    @apply text-xl;
+  }
+}

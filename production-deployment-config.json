@@ -1,0 +1,74 @@
+{
+  "name": "nexxusbridge-healthcare-ai",
+  "version": "1.0.0",
+  "description": "HIPAA-compliant healthcare documentation SaaS platform",
+  "productionConfig": {
+    "environment": "production",
+    "domain": "nexxusbridge.com",
+    "ssl": true,
+    "compression": true,
+    "minification": true,
+    "caching": {
+      "staticAssets": "1y",
+      "apiResponses": "5m",
+      "publicData": "1h"
+    }
+  },
+  "security": {
+    "hipaaCompliant": true,
+    "soc2TypeII": true,
+    "encryptionAtRest": true,
+    "encryptionInTransit": true,
+    "auditLogging": true,
+    "rateLimiting": {
+      "windowMs": 900000,
+      "maxRequests": 100
+    }
+  },
+  "performance": {
+    "bundleOptimization": true,
+    "codesplitting": true,
+    "lazyLoading": true,
+    "compressionLevel": 9,
+    "imageOptimization": {
+      "webp": true,
+      "quality": 80,
+      "progressive": true
+    }
+  },
+  "monitoring": {
+    "errorTracking": true,
+    "performanceMetrics": true,
+    "securityAlerts": true,
+    "uptime": true
+  },
+  "backup": {
+    "database": {
+      "frequency": "daily",
+      "retention": "30d",
+      "encryption": true
+    },
+    "files": {
+      "frequency": "weekly",
+      "retention": "90d"
+    }
+  },
+  "contact": {
+    "ceo": "Eric Pearson",
+    "title": "President & CEO",
+    "phone": "(706) 618-0236",
+    "email": "info@nexxusbridge.com",
+    "support": "24/7"
+  },
+  "compliance": {
+    "frameworks": [
+      "HIPAA",
+      "SOC 2 Type II",
+      "NIST Cybersecurity Framework"
+    ],
+    "certifications": [
+      "Healthcare Technology Certified",
+      "Cloud Security Alliance"
+    ]
+  }
+}

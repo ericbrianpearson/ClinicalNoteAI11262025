@@ -1,0 +1,52 @@
+{
+  "name": "Health Scribe AI - Clinical Documentation",
+  "short_name": "Health Scribe",
+  "description": "HIPAA-compliant clinical documentation with AI-powered voice transcription and E/M coding",
+  "start_url": "/",
+  "id": "/",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "background_color": "#ffffff",
+  "theme_color": "#2563EB",
+  "orientation": "any",
+  "categories": ["medical", "productivity", "business", "health"],
+  "icons": [
+    {
+      "src": "/logo-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/logo-icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/platform-screenshot.svg",
+      "sizes": "1280x720",
+      "type": "image/svg+xml",
+      "form_factor": "wide",
+      "label": "Health Scribe AI Dashboard"
+    }
+  ],
+  "lang": "en-US",
+  "scope": "/",
+  "dir": "ltr",
+  "permissions": ["microphone"],
+  "related_applications": [],
+  "prefer_related_applications": false
+}

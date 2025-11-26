@@ -1,0 +1,19 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://health-scribe.net/sitemap.xml
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 1
+
+# Block access to admin areas
+Disallow: /admin/
+Disallow: /api/
+Disallow: /private/
+
+# Allow access to demo and public areas
+Allow: /demo
+Allow: /about
+Allow: /contact
+Allow: /features
